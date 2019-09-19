@@ -98,7 +98,6 @@ def prepare_posts(dfp):
         'curatedDate',
         'moderationGuidelinesHtmlBody',
         'status',
-        'deleted',
         'legacySpam',
         'authorIsUnreviewed',
         'most_recent_comment',

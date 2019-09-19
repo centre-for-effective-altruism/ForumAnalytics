@@ -15,7 +15,7 @@ def filtered_and_enriched_votes(dfs):
     dfv = dfs['votes']
 
     GP2_id = 'pgoCXxuzpkPXADTp2'
-    excluded_posts = dfp[(dfp['status'] != 2) | dfp['authorIsUnreviewed'] | dfp['draft'] | dfp['deleted']]['_id']
+    excluded_posts = dfp[(dfp['status'] != 2) | dfp['authorIsUnreviewed'] | dfp['draft']]['_id']
     lw_team = dfu[dfu['username'].isin(['Benito', 'habryka4', 'Raemon', 'jimrandomh', 'Ruby'])]['_id']
 
     dfvv = dfv[(~dfv['userId'].isin(lw_team)) & (~dfv['documentId'].isin(excluded_posts)) & (

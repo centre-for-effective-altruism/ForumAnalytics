@@ -123,7 +123,7 @@ def run_plotline(dfs, online=False, start_date=None, size=(1000, 400), pr='D', m
 
 
     valid_users = dfu[(~dfu['banned'])&(~dfu['deleted'])&(dfu['num_distinct_posts_viewed']>=5)]
-    valid_posts = dfp[(dfp[['smallUpvote', 'bigUpvote']].sum(axis=1) >= 2)&~dfp['deleted']&~dfp['draft']&~dfp['legacySpam']]
+    valid_posts = dfp[(dfp[['smallUpvote', 'bigUpvote']].sum(axis=1) >= 2)&~dfp['draft']&~dfp['legacySpam']]
     valid_comments = dfc[dfc['userId']!='pgoCXxuzpkPXADTp2'] #remove GPT-2
     valid_votes = get_valid_non_self_votes(dfv,dfp, dfc, dfu)
 
