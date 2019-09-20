@@ -707,9 +707,9 @@ def enrich_collections(colls_dfs, date_str):  # dict[str:df] -> dict[str:df]
 
 @timed
 def run_etlw_pipeline(date_str, clean_up=False, plotly=False, gsheets=False,
-                      metrics=False, postgres=False):
+                      metrics=False, postgres=False, limit=None):
     # ##0&1. DOWNLOAD DATA and BASIC PARSE
-    dfs_cleaned = get_collections_cleaned()
+    dfs_cleaned = get_collections_cleaned(limit=limit)
 
     # ##2. ENRICHING OF COLLECTIONS
     today = dfs_cleaned['views']['createdAt'].max().strftime('%Y%m%d')  # treat max date in collections as "today"
