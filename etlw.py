@@ -695,10 +695,10 @@ def enrich_collections(colls_dfs, date_str):  # dict[str:df] -> dict[str:df]
     """
 
     enriched_dfs = {
-        'users': enrich_users(colls_dfs, date_str=date_str),
-        'posts': enrich_posts(colls_dfs),
-        'comments': enrich_comments(colls_dfs),
-        'votes': colls_dfs['votes'],
+        # 'users': enrich_users(colls_dfs, date_str=date_str),
+        # 'posts': enrich_posts(colls_dfs),
+        # 'comments': enrich_comments(colls_dfs),
+        # 'votes': colls_dfs['votes'],
         'views': colls_dfs['views']
     }
 
@@ -720,7 +720,7 @@ def run_etlw_pipeline(date_str, clean_up=False, plotly=False, gsheets=False,
 
     # ##4 METRIC STUFF - PLOTS AND SHEETS
     if metrics:
-        run_metric_pipeline(dfs_enriched, online=True, sheets=True, plots=True)
+        run_metric_pipeline(dfs_enriched, online=True, sheets=gsheets, plots=True) # TODO; change a lot of these default options to respect input options
 
     # ##5. PLOT GRAPHS TO PLOTLY DASHBOARD
     if plotly:
@@ -745,8 +745,8 @@ if __name__ == '__main__':
     run_etlw_pipeline(
                       date_str=pd.datetime.today().strftime('%Y%m%d'),
                       plotly=True,
-                      gsheets=True,
-                      metrics=True,
-                      postgres=False,
+                    #   gsheets=True,
+                    #   metrics=True,
+                    #   postgres=False,
                       clean_up=True
                       )

@@ -85,6 +85,9 @@ def create_trend_frame():
 def plot_karma_metric(allVotes, online=False):
     pr = 'D'
     votes_ts = allVotes.set_index('votedAt').resample(pr)['effect'].sum()
+    print(' ______ PRINTING ________')
+    print(votes_ts)
+    print(' ______________')
     votes_ts = votes_ts.reset_index().iloc[:-1]
     votes_ts_ma = votes_ts.set_index('votedAt')['effect'].rolling(7).mean().round(1).reset_index()
 

@@ -10,10 +10,11 @@ def get_config_field(section, field):
     return config[section][field]
 
 
-def print_and_log(message):
+def print_and_log(*args):
     logging.basicConfig(filename=get_config_field('LOGGING', 'file'), level=logging.DEBUG)
 
-    print(message)
+    print(*args)
+    message = ' '.join([str(arg) for arg in args])
     logging.debug(message)
 
 
