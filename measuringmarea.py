@@ -11,6 +11,7 @@ from utils import get_config_field
 
 post_id_regex = r"/posts/(\w+)/"
 
+
 def get_id_from_link(link):
     # print(link)
     matches = re.finditer(post_id_regex, link, re.MULTILINE)
@@ -38,7 +39,7 @@ def get_good_posts(ids=True):
     return set(goodPostsIds)
 
 
-def run_ea_metric(dfs, plot=True):
+def get_good_views(dfs):
     good_posts = get_good_posts()
     # print('gps', good_posts, len(good_posts))
     views = dfs['views']
@@ -48,13 +49,6 @@ def run_ea_metric(dfs, plot=True):
     document_id_col = list(views.columns.values).index('documentId')  # evaluates to 2
     created_at_col = list(views.columns.values).index('createdAt')    # evaluates to 3
     # print(user_id_col, document_id_col)
-    # for view in views.values:
-        # print(view[document_id_col])
-        # if view[document_id_col] in good_posts:
-        #     print('found one')
-        #     print(view)
-        #     return
-        # return
     good_views = []
     already_stored_views = set()
     for view in views.values:
@@ -63,7 +57,10 @@ def run_ea_metric(dfs, plot=True):
             good_views.append([view[user_id_col], view[document_id_col], view[created_at_col]])
             already_stored_views.add((view[user_id_col], view[document_id_col]))
     good_views = pd.DataFrame(data=good_views, columns=['user_id', 'document_id', 'created_at'])
-    print(good_views)
+    return good_views
+
+
+def plot_good_views(good_views):
     good_views_by_day = good_views.set_index('created_at').resample('D')['document_id'].count()
     good_views_by_day = good_views_by_day.reset_index().iloc[:-1]
     # return good_views_by_day
@@ -71,7 +68,7 @@ def run_ea_metric(dfs, plot=True):
 
     # TODO; if plot:
     date_col = 'created_at'
-    title = 'goodviewstitleplaceholder'
+    title = 'Views of Good Posts by Logged-in Users'
     color = 'red'
     size = (600, 500)
     start_date = '2019-05-01'
@@ -96,7 +93,7 @@ def run_ea_metric(dfs, plot=True):
         autosize=True, width=size[0], height=size[1],
         title=title,
         xaxis={'range': [start_date, end_date], 'title': None},
-        yaxis={'range': [0, good_views_by_day.set_index(date_col)[start_date:]['document_id'].max() * 1.1], 'title': 'viewstodo'}
+        yaxis={'range': [0, good_views_by_day.set_index(date_col)[start_date:]['document_id'].max() * 1.1], 'title': 'Views'}
     )
 
     fig = go.Figure(data=data, layout=layout)
@@ -107,12 +104,14 @@ def run_ea_metric(dfs, plot=True):
     )
     init_notebook_mode(connected=True)
 
-    if True:
-        py.iplot(fig, filename='Net Karma Metric')
+    if get_config_field('PLOTLY', 'go_live') == 'True':
+        py.iplot(fig, filename='Good Post Views Metric')
     else:
-        iplot(fig, filename='Net Karma Metric')
+        iplot(fig, filename='Good Post Views Metric')
 
-    return good_views_by_week_moving_average
-    # print(good_views.size)
 
-    # print('gvs', good_views)
+def run_ea_metric_pipeline(dfs, plot=True):
+    good_views = get_good_views(dfs)
+    if plot:
+        plot_good_views(good_views)
+    # print(good_views)

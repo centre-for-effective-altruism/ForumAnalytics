@@ -695,10 +695,10 @@ def enrich_collections(colls_dfs, date_str):  # dict[str:df] -> dict[str:df]
     """
 
     enriched_dfs = {
-        # 'users': enrich_users(colls_dfs, date_str=date_str),
-        # 'posts': enrich_posts(colls_dfs),
-        # 'comments': enrich_comments(colls_dfs),
-        # 'votes': colls_dfs['votes'],
+        'users': enrich_users(colls_dfs, date_str=date_str),
+        'posts': enrich_posts(colls_dfs),
+        'comments': enrich_comments(colls_dfs),
+        'votes': colls_dfs['votes'],
         'views': colls_dfs['views']
     }
 
