@@ -66,13 +66,12 @@ def plot_good_views(good_views):
     # return good_views_by_day
     good_views_by_week_moving_average = good_views_by_day.set_index('created_at')['document_id'].rolling(7).mean().round(1).reset_index()
 
-    # TODO; if plot:
     date_col = 'created_at'
     title = 'Views of Good Posts by Logged-in Users'
     color = 'red'
     size = (600, 500)
-    start_date = '2019-05-01'
-    end_date = '2019-10-01'
+    start_date = '2019-03-01'
+    end_date = good_views['created_at'].max().strftime('%Y-%m-%d')
 
     data = [
         go.Scatter(

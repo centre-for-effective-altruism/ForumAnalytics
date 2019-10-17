@@ -149,12 +149,5 @@ def run_plotline(dfs, online=False, start_date=None, size=(1000, 400), pr='D', m
     # unique voters
     plotly_ds_uniques(valid_votes, 'votedAt', title='Num Unique Voters', start_date=start_date,
                             size=size, color='darkorange', online=online, pr=pr, ma=ma)
-    # unique commenters
-    plotly_ds_uniques(valid_comments, 'postedAt', title='Num Unique Commenters',
-                            start_date=start_date, size=size, color='darkgreen', online=online, pr=pr, ma=ma)
-    # unique poster
-    plotly_ds_uniques(valid_posts, 'postedAt', title='Num Unique Posters',
-                            start_date=start_date, size=size, color='darkblue', online=online, pr=pr, ma=ma)
 
     plot_table(downvote_monitoring(dfv, dfp, dfc, dfu, 2, ), title='Downvote Monitoring', online=online)
-

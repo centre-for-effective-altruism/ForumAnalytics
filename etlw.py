@@ -659,7 +659,7 @@ def enrich_users(colls_dfs, date_str):
     views = colls_dfs['views']
     votes = colls_dfs['votes']
 
-    date = datetime.datetime.strptime(date_str, '%Y%m%d')
+    date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 
     post_stats = calc_user_post_stats(posts)
     comment_stats = calc_user_comment_stats(comments)
@@ -712,7 +712,7 @@ def run_etlw_pipeline(date_str, clean_up=False, plotly=False, gsheets=False,
     dfs_cleaned = get_collections_cleaned(limit=limit)
 
     # ##2. ENRICHING OF COLLECTIONS
-    today = dfs_cleaned['views']['createdAt'].max().strftime('%Y%m%d')  # treat max date in collections as "today"
+    today = dfs_cleaned['views']['createdAt'].max().strftime('%Y-%m-%d')  # treat max date in collections as "today"
     dfs_enriched = enrich_collections(dfs_cleaned, date_str=today)
 
     # ##3. WRITE OUT ENRICHED COLLECTIONS
@@ -743,7 +743,7 @@ def run_etlw_pipeline(date_str, clean_up=False, plotly=False, gsheets=False,
 
 if __name__ == '__main__':
     run_etlw_pipeline(
-                      date_str=pd.datetime.today().strftime('%Y%m%d'),
+                      date_str=pd.datetime.today().strftime('%Y-%m-%d'),
                       plotly=True,
                     #   gsheets=True,
                     #   metrics=True,
