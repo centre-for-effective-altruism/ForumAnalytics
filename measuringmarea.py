@@ -39,6 +39,10 @@ def get_good_posts(ids=True):
     return set(goodPostsIds)
 
 
+def get_post_dates(post_ids):
+    pass
+
+
 def get_good_views(dfs):
     good_posts = get_good_posts()
     # print('gps', good_posts, len(good_posts))
@@ -110,7 +114,9 @@ def plot_good_views(good_views):
 
 
 def run_ea_metric_pipeline(dfs, plot=True):
-    good_views = get_good_views(dfs)
+    # good_posts = get_good_posts
+    good_views = get_good_views(dfs) # , good_posts
     if plot:
         plot_good_views(good_views)
+        # plot_good_posts_by_time()
     # print(good_views)

@@ -36,9 +36,10 @@ def plotly_ts(ss=None, title='missing', color='yellow', dd=None, start_date=None
     else:
         iplot(fig, filename=title)
 
-def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=None, end_date=pd.datetime.today(),
-                 date_col='postedAt', size=(700, 400), online=False, exclude_last_period=True,
-                 pr='D', ma=7):
+def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=None,
+                 end_date=pd.datetime.today(), date_col='postedAt', size=(700, 400), online=False, exclude_last_period=True, pr='D', ma=7, marker='circle', just_the_figure=False):
+
+    mas = ma if hasattr(ma, '__len__') else [ma]
 
     pr_dict = {'D':'day', 'W':'week', 'M':'month', 'Y':'year'}
     pr_dictly = {'D':'daily', 'W':'weekly', 'M':'monthly', 'Y':'yearly'}
@@ -46,17 +47,33 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
     if dd is None:
         dd = ss.set_index(date_col).resample(pr).size().to_frame(title).reset_index()
 
-    dd_ma = dd.set_index(date_col)[title].rolling(ma).mean().round(1).reset_index()
+    dd_mas = [
+        dd.set_index(date_col)[title].rolling(ma).mean().round(1).reset_index()
+        for ma in mas
+    ]
 
     if exclude_last_period:
         dd = dd.iloc[:-1]
-        dd_ma = dd_ma.iloc[:-1]
+        dd_mas = [dd_ma.iloc[:-1] for dd_ma in dd_mas]
+
+    single_ma = len(mas) == 1
+    mode_base = 'line' if single_ma else 'markers'
+    line_base = {'color': color, 'width': 0.75} if single_ma else None
+    marker_base = None if single_ma else {'color': color, 'size': 4, 'opacity': .5, 'symbol': marker}
 
     data = [
-        go.Scatter(x=dd[date_col], y=dd[title], line={'color': color, 'width': 0.75}, name='{}-value'.format(pr_dictly[pr])),
-        go.Scatter(x=dd_ma[date_col], y=dd_ma[title], line={'color': color, 'width': 3}, name='{} {} avg'.format(ma, pr_dict[pr]))
+        go.Scatter(
+            x=dd[date_col], y=dd[title], mode=mode_base, line=line_base, marker=marker_base,
+            name='{}-value'.format(pr_dictly[pr])
+        ),
+        *[
+            go.Scatter(
+                x=dd_ma[date_col], y=dd_ma[title], line={'color': color, 'width': 2.25*ndx+.75},
+                name='{} {} avg'.format(ma[ndx], pr_dict[pr])
+            )
+            for ndx, dd_ma in enumerate(dd_mas)
+        ]
     ]
-
 
     layout = go.Layout(
         autosize = True, width=size[0], height=size[1],
@@ -66,13 +83,30 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
                'title': title}
     )
 
-
     fig = go.Figure(data=data, layout=layout)
+
+    if just_the_figure:
+        return fig
 
     if online:
         py.iplot(fig, filename=title)
     else:
         iplot(fig, filename=title)
+
+
+# Bake a pie
+def combine_figures(figs, title):
+    new_data = []
+    for fig in figs:
+        for scatter in fig.data:
+            new_data.append(scatter)
+    newFig = go.Figure(data=new_data, layout=figs[0].layout)
+    iplot(newFig, filename=title)
+    # return figs[0].data
+    # datas = [fig.data for fig in figs]
+    # return datas
+    # new_data = sum()
+    # return new_data
 
 
 def plotly_ds_uniques(df, date_col, title, start_date, color, size, online, pr='D', ma=7):

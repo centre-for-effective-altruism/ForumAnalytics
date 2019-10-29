@@ -1,7 +1,7 @@
 """
 ea version of etlw
 """
-from etlw import get_collections_cleaned, enrich_collections, write_collections
+from etlw import get_collections_cleaned, enrich_collections
 from losttheplotly import run_plotline
 from measuringmarea import run_ea_metric_pipeline
 from utils import timed
