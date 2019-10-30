@@ -37,7 +37,7 @@ def plotly_ts(ss=None, title='missing', color='yellow', dd=None, start_date=None
         iplot(fig, filename=title)
 
 def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=None,
-                 end_date=pd.datetime.today(), date_col='postedAt', size=(700, 400), online=False, exclude_last_period=True, pr='D', ma=7, marker='circle', just_the_figure=False):
+                 end_date=pd.datetime.today(), date_col='postedAt', size=(700, 400), online=False, exclude_last_period=True, pr='D', ma=7):
 
     mas = ma if hasattr(ma, '__len__') else [ma]
 
@@ -57,9 +57,16 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
         dd_mas = [dd_ma.iloc[:-1] for dd_ma in dd_mas]
 
     single_ma = len(mas) == 1
-    mode_base = 'line' if single_ma else 'markers'
+    mode_base = 'lines' if single_ma else 'markers'
     line_base = {'color': color, 'width': 0.75} if single_ma else None
-    marker_base = None if single_ma else {'color': color, 'size': 4, 'opacity': .5, 'symbol': marker}
+    marker_base = None if single_ma else {'color': color, 'size': 4, 'opacity': .5}
+    if single_ma:
+        line_widths_ma = [3]
+    elif len(mas) == 2:
+        line_widths_ma = [.75, 3]
+    else:
+        line_widths_ma = [.75*i for i in range(len(mas))]
+
 
     data = [
         go.Scatter(
@@ -68,8 +75,8 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
         ),
         *[
             go.Scatter(
-                x=dd_ma[date_col], y=dd_ma[title], line={'color': color, 'width': 2.25*ndx+.75},
-                name='{} {} avg'.format(ma[ndx], pr_dict[pr])
+                x=dd_ma[date_col], y=dd_ma[title], line={'color': color, 'width': line_widths_ma[ndx]},
+                name='{} {} avg'.format(mas[ndx], pr_dict[pr])
             )
             for ndx, dd_ma in enumerate(dd_mas)
         ]
@@ -85,28 +92,10 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
 
     fig = go.Figure(data=data, layout=layout)
 
-    if just_the_figure:
-        return fig
-
     if online:
         py.iplot(fig, filename=title)
     else:
         iplot(fig, filename=title)
-
-
-# Bake a pie
-def combine_figures(figs, title):
-    new_data = []
-    for fig in figs:
-        for scatter in fig.data:
-            new_data.append(scatter)
-    newFig = go.Figure(data=new_data, layout=figs[0].layout)
-    iplot(newFig, filename=title)
-    # return figs[0].data
-    # datas = [fig.data for fig in figs]
-    # return datas
-    # new_data = sum()
-    # return new_data
 
 
 def plotly_ds_uniques(df, date_col, title, start_date, color, size, online, pr='D', ma=7):
