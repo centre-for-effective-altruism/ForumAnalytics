@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
@@ -15,10 +16,9 @@ def plotly_ts(ss=None, title='missing', color='yellow', dd=None, start_date=None
     if exclude_last_period:
         dd = dd.iloc[:-1]
 
-    data = [
-                go.Scatter(x=dd[date_col], y=dd[title], line={'color': color, 'width': 2})]
+    data = [go.Scatter(x=dd[date_col], y=dd[title], line={'color': color, 'width': 2})]
 
-    pr_dict = {'D': 'daily', 'W': 'weekly'}
+    pr_dict = {'D': 'daily', 'W': 'weekly', 'M': 'monthly'}
 
     layout = go.Layout(
         autosize = True, width=size[0], height=size[1],
@@ -36,8 +36,10 @@ def plotly_ts(ss=None, title='missing', color='yellow', dd=None, start_date=None
     else:
         iplot(fig, filename=title)
 
-def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=None,
-                 end_date=pd.datetime.today(), date_col='postedAt', size=(700, 400), online=False, exclude_last_period=True, pr='D', ma=7):
+
+def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=None, end_date=pd.datetime.today(),
+                 date_col='postedAt', size=(700, 400), online=False, exclude_last_period=True, pr='D', ma=7,
+                 multiple_mas_show_daily=False):
 
     mas = ma if hasattr(ma, '__len__') else [ma]
 
@@ -68,25 +70,28 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
         line_widths_ma = [.75*i for i in range(len(mas))]
 
 
-    data = [
-        go.Scatter(
+    data = []
+    if single_ma or multiple_mas_show_daily:
+        data.append(go.Scatter(
             x=dd[date_col], y=dd[title], mode=mode_base, line=line_base, marker=marker_base,
             name='{}-value'.format(pr_dictly[pr])
-        ),
-        *[
-            go.Scatter(
-                x=dd_ma[date_col], y=dd_ma[title], line={'color': color, 'width': line_widths_ma[ndx]},
-                name='{} {} avg'.format(mas[ndx], pr_dict[pr])
-            )
-            for ndx, dd_ma in enumerate(dd_mas)
-        ]
-    ]
+        ))
+    for ndx, dd_ma in enumerate(dd_mas):
+        data.append(go.Scatter(
+            x=dd_ma[date_col], y=dd_ma[title], line={'color': color, 'width': line_widths_ma[ndx]},
+            name='{} {} avg'.format(mas[ndx], pr_dict[pr])
+        ))
+
+    if single_ma or multiple_mas_show_daily:
+        y_max = dd.set_index(date_col)[start_date:][title].max()
+    else:
+        y_max = dd_mas[0][title].max()
 
     layout = go.Layout(
         autosize = True, width=size[0], height=size[1],
         title= title,
         xaxis={'range': [start_date, end_date]},
-        yaxis={'range': [0, dd.set_index(date_col)[start_date:][title].max() * 1.2],
+        yaxis={'range': [0, y_max * 1.2],
                'title': title}
     )
 

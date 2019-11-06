@@ -26,7 +26,6 @@ def get_id_from_link(link):
 
 def get_good_posts(ids=True):
     sheet_id = get_config_field('GSHEETS', 'good_posts_sheet')
-    # user = get_config_field('GSHEETS', 'user')
     goodPostsSpreadsheet = Spread(sheet_id, sheet='Excellent Post URLs')
     goodPostsDf = goodPostsSpreadsheet.sheet_to_df(index=0, header_rows=0)
     goodPostsArr = goodPostsDf.values[:, 0]

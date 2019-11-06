@@ -16,7 +16,7 @@ def run(plot=True, metric=True, limit=None, online=True):
     if metric:
         run_ea_metric_pipeline(dfs_enriched, plot=plot)
     if plot:
-        run_plotline(dfs_enriched, start_date='2019-03-01', size=(700, 350), online=online)
+        run_plotline(dfs_enriched, start_date='2019-03-01', size=(700, 350), online=online, ma=[7, 30])
 
 if __name__ == "__main__":
     run()
