@@ -3,6 +3,7 @@ import re
 import numpy as np
 import pandas as pd
 from losttheplotly import plotly_ts_ma
+import ast
 
 from utils import get_config_field
 
@@ -35,7 +36,7 @@ def get_good_posts(ids=True):
 
 
 def get_good_views(dfs, good_posts):
-    staff_user_ids = set(get_config_field('VARS', 'staff_user_ids'))
+    staff_user_ids = set(ast.literal_eval(get_config_field('VARS', 'staff_user_ids')))
     views = dfs['views']
     user_id_col = list(views.columns.values).index('userId')          # evaluates to 1
     document_id_col = list(views.columns.values).index('documentId')  # evaluates to 2
@@ -59,6 +60,7 @@ def plot_good_posts(dfs, good_posts, online=False):
         df_good_posts_full, title='Good Posts', ma=[7, 30],
         color='green', start_date='2019-03-01', online=online
     )
+
 
 def run_ea_metric_pipeline(dfs, plot=True, online=True):
     good_posts = get_good_posts()
