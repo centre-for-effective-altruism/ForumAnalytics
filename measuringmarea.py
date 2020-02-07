@@ -8,7 +8,6 @@ from utils import get_config_field
 
 post_id_regex = r"/posts/(\w+)/"
 
-
 def get_id_from_link(link):
     # print(link)
     matches = re.finditer(post_id_regex, link, re.MULTILINE)
@@ -36,6 +35,7 @@ def get_good_posts(ids=True):
 
 
 def get_good_views(dfs, good_posts):
+    staff_user_ids = set(get_config_field('VARS', 'staff_user_ids'))
     views = dfs['views']
     user_id_col = list(views.columns.values).index('userId')          # evaluates to 1
     document_id_col = list(views.columns.values).index('documentId')  # evaluates to 2
@@ -44,7 +44,8 @@ def get_good_views(dfs, good_posts):
     already_stored_views = set()
     for view in views.values:
         if (view[document_id_col] in good_posts and
-                (view[user_id_col], view[document_id_col]) not in already_stored_views):
+                (view[user_id_col], view[document_id_col]) not in already_stored_views and
+                view[user_id_col] not in staff_user_ids):
             good_views.append([view[user_id_col], view[document_id_col], view[created_at_col]])
             already_stored_views.add((view[user_id_col], view[document_id_col]))
     good_views = pd.DataFrame(data=good_views, columns=['user_id', 'document_id', 'created_at'])
