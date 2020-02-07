@@ -37,7 +37,6 @@ def get_good_posts(ids=True):
 
 def get_good_views(dfs, good_posts):
     staff_user_ids = set(ast.literal_eval(get_config_field('VARS', 'staff_user_ids')))
-    print(staff_user_ids)
     views = dfs['views']
     user_id_col = list(views.columns.values).index('userId')          # evaluates to 1
     document_id_col = list(views.columns.values).index('documentId')  # evaluates to 2
