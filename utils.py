@@ -6,7 +6,7 @@ import configparser
 
 def get_config_field(section, field):
     config = configparser.ConfigParser()
-    config.read('/home/ec2-user/ForumAnalytics/config.ini')
+    config.read('/Users/jpaddison/cea/Forum/ForumAnalytics/config.ini')
     return config[section][field]
 
 
