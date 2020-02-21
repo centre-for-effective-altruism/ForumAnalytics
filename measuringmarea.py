@@ -1,6 +1,5 @@
-from gspread_pandas import Spread, Client
+from gspread_pandas import Spread
 import re
-import numpy as np
 import pandas as pd
 from losttheplotly import plotly_ts_ma
 import ast
@@ -25,8 +24,9 @@ def get_id_from_link(link):
 
 
 def get_good_posts(ids=True):
-    sheet_id = get_config_field('GSHEETS', 'good_posts_sheet')
-    goodPostsSpreadsheet = Spread(sheet_id, sheet='Excellent Post URLs')
+    doc_id = get_config_field('GSHEETS', 'good_posts_doc_id')
+    sheet_ndx = int(get_config_field('GSHEETS', 'good_posts_sheet_ndx'))
+    goodPostsSpreadsheet = Spread(doc_id, sheet=sheet_ndx)
     goodPostsDf = goodPostsSpreadsheet.sheet_to_df(index=0, header_rows=0)
     goodPostsArr = goodPostsDf.values[:, 0]
     if not ids:
