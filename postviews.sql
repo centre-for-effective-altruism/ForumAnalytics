@@ -12,10 +12,12 @@ WITH lessraw AS (
 ) SELECT
   client_id,
   path,
-  -- substring(path from 8 for
+  -- TODO: Maybe get post_id here?
+  -- substring(path from 8 for N)
   min(timestamp) AS first_viewed
 FROM lessraw
 WHERE substring(path from 2 for 5) = 'posts' AND
-  seconds >= 60 AND -- TODO; seconds input var
+ -- TODO: Seconds as input variable?
+  seconds >= 60 AND
   environment = 'production'
 GROUP BY path, client_id;
