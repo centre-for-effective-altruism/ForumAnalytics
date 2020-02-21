@@ -1,14 +1,21 @@
-create temp view lessraw as (
-  select
+WITH lessraw AS (
+  SELECT
     environment,
     timestamp,
-    event ->> 'clientId' as client_id,
-    event ->> 'tabId' as tab_id,
-    event ->> 'path' as path,
-    (event ->> 'seconds')::NUMERIC as seconds,
-    event ->> 'increment' as increment
-  from raw
-    where event_type = 'timerEvent'
-);
-
-select client_id, path, min(timestamp) as first_viewed from lessraw where client_id='YzkxZniRf82ezAJ9Q' and substring(path from 2 for 5) = 'posts' and seconds >= 60 and environment = 'production' group by path, client_id limit 3;
+    event ->> 'clientId' AS client_id,
+    event ->> 'tabId' AS tab_id,
+    event ->> 'path' AS path,
+    (event ->> 'seconds')::NUMERIC AS seconds,
+    event ->> 'increment' AS increment
+  FROM raw
+    WHERE event_type = 'timerEvent'
+) SELECT
+  client_id,
+  path,
+  -- substring(path from 8 for
+  min(timestamp) AS first_viewed
+FROM lessraw
+WHERE substring(path from 2 for 5) = 'posts' AND
+  seconds >= 60 AND -- TODO; seconds input var
+  environment = 'production'
+GROUP BY path, client_id;

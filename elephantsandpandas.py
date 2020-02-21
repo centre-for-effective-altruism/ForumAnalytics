@@ -22,3 +22,9 @@ def db_query(sql):
         db_connect()
     data = pd.read_sql_query(sql, conn)
     return data
+
+
+def sql_file_query(sql_file):
+    with open(sql_file, 'r') as sql_fd:
+        sql = sql_fd.read()
+    return db_query(sql)

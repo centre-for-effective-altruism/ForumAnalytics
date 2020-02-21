@@ -59,6 +59,7 @@ def plot_good_posts(dfs, good_posts, online=False):
         color='green', start_date='2019-03-01', online=online
     )
 
+
 def run_ea_metric_pipeline(dfs, plot=True, online=True):
     good_posts = get_good_posts()
     good_views = get_good_views(dfs, good_posts)
