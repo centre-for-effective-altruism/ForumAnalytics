@@ -10,6 +10,7 @@ WITH lessraw AS (
   FROM raw
     WHERE event_type = 'timerEvent'
 ) SELECT
+  -- client_id is unique to each browser
   client_id,
   path,
   -- TODO: Maybe get post_id here?
