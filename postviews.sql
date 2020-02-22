@@ -32,7 +32,8 @@ WITH lessraw AS (
   FROM lessraw
   GROUP BY client_id
 ) SELECT
-  all_views.*
+  all_views.*,
+  first_visits.timestamp AS first_client_visit
 FROM all_views
 JOIN first_visits
   ON all_views.client_id = first_visits.client_id

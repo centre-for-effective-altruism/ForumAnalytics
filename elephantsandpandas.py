@@ -18,7 +18,7 @@ def db_connect():
 
 
 def db_query(sql):
-    if not conn:
+    if not conn or conn.closed:
         db_connect()
     data = pd.read_sql_query(sql, conn)
     return data
