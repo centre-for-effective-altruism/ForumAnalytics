@@ -27,6 +27,7 @@ WITH lessraw AS (
   GROUP BY path, client_id
 ), first_visits AS (
   SELECT
+    -- We only count the first view of the post
     min(timestamp) AS timestamp,
     client_id
   FROM lessraw
@@ -38,4 +39,5 @@ FROM all_views
 JOIN first_visits
   ON all_views.client_id = first_visits.client_id
 WHERE
-  first_visits.timestamp < all_views.first_viewed - INTERVAL '3 days';
+  -- The view must happen 3 days after the first time you visit the site
+  all_views.first_viewed > first_visits.timestamp + INTERVAL '3 days';
