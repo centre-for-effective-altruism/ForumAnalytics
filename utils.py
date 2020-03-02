@@ -3,11 +3,15 @@ import pytz
 import logging
 from functools import wraps
 import configparser
+import pathlib
+
 
 
 def get_config_field(section, field):
     config = configparser.ConfigParser()
-    config.read('/home/ec2-user/ForumAnalytics/config.ini')
+    project_root = pathlib.Path(__file__).parent.absolute()
+    config_filename = project_root / 'config.ini'
+    config.read(config_filename)
     return config[section][field]
 
 
