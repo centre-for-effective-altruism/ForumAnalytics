@@ -5,6 +5,7 @@ from etlw import get_collections_cleaned, enrich_collections
 from losttheplotly import run_plotline
 from measuringmarea import run_ea_metric_pipeline
 from neweametric import run_new_ea_metric_pipeline
+from eadash import plot_ea_dashboard_other
 from utils import timed
 
 
@@ -19,6 +20,7 @@ def run(plot=True, metric=True, limit=None, online=True):
         run_new_ea_metric_pipeline(plot=plot, online=online)
     if plot:
         run_plotline(dfs_enriched, start_date='2019-03-01', size=(700, 350), online=online, ma=[7, 30])
+        plot_ea_dashboard_other(dfs_enriched, online=online)
 
 
 if __name__ == "__main__":

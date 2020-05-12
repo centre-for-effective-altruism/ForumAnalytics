@@ -8,18 +8,15 @@ from utils import get_config_field
 
 post_id_regex = r"/posts/(\w+)/"
 
+
 def get_id_from_link(link):
-    # print(link)
     matches = re.finditer(post_id_regex, link, re.MULTILINE)
-    # print('matches', matches)
     if not matches:
         return ''
     for match in matches:
-        # print('match', match)
         if not match.groups():
             return ''
         for group in match.groups():
-            # print('group', group)
             return group
 
 

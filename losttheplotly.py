@@ -2,10 +2,11 @@ import pandas as pd
 import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-from lwdash import *
-from karmametric import *
-from utils import timed
+from plotly.offline import init_notebook_mode, iplot
+
+from utils import timed, get_config_field
+from lwdash import downvote_monitoring
+
 
 def plotly_ts(ss=None, title='missing', color='yellow', dd=None, start_date=None, end_date=pd.datetime.today(),
               ma=1, pr='D', date_col='postedAt', size=(700, 400), online=False, exclude_last_period=True,):
@@ -20,15 +21,14 @@ def plotly_ts(ss=None, title='missing', color='yellow', dd=None, start_date=None
     pr_dict = {'D': 'daily', 'W': 'weekly', 'M': 'monthly'}
 
     layout = go.Layout(
-        autosize = True, width=size[0], height=size[1],
-        title= '{} ({})'.format(title, pr_dict[pr]),
+        autosize=True, width=size[0], height=size[1],
+        title='{} ({})'.format(title, pr_dict[pr]),
         xaxis={'range': [start_date, end_date]},
         yaxis={'range': [0, dd.set_index(date_col)[start_date:][title].max() * 1.2],
                'title': title}
     )
 
-
-    fig = go.Figure(data=data, layout=layout)
+    fig=go.Figure(data=data, layout=layout)
 
     if online:
         py.iplot(fig, filename=title)
@@ -42,8 +42,8 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
 
     mas = ma if hasattr(ma, '__len__') else [ma]
 
-    pr_dict = {'D':'day', 'W':'week', 'M':'month', 'Y':'year'}
-    pr_dictly = {'D':'daily', 'W':'weekly', 'M':'monthly', 'Y':'yearly'}
+    pr_dict = {'D': 'day', 'W': 'week', 'M': 'month', 'Y': 'year'}
+    pr_dictly = {'D': 'daily', 'W': 'weekly', 'M': 'monthly', 'Y': 'yearly'}
 
     if dd is None:
         dd = ss.set_index(date_col).resample(pr).size().to_frame(title).reset_index()
@@ -68,7 +68,6 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
     else:
         line_widths_ma = [.75*i for i in range(len(mas))]
 
-
     data = []
     if single_ma or multiple_mas_show_daily:
         data.append(go.Scatter(
@@ -87,8 +86,8 @@ def plotly_ts_ma(ss=None, title='missing', color='yellow', dd=None, start_date=N
         y_max = dd_mas[0][title].max()
 
     layout = go.Layout(
-        autosize = True, width=size[0], height=size[1],
-        title= title,
+        autosize=True, width=size[0], height=size[1],
+        title=title,
         xaxis={'range': [start_date, end_date]},
         yaxis={'range': [0, y_max * 1.2],
                'title': title}
@@ -106,6 +105,7 @@ def plotly_ds_uniques(df, date_col, title, start_date, color, size, online, pr='
     dd = df.set_index(date_col)['2009':].resample(pr)['userId'].nunique().to_frame(title).reset_index()
     plotly_ts_ma(dd=dd, date_col=date_col, title=title, start_date=start_date, color=color, size=size,
                  online=online, pr=pr, ma=ma)
+
 
 def plot_table(df, title='missing', online=False):
     trace = go.Table(
@@ -135,6 +135,7 @@ def get_valid_non_self_votes(dfv, dfp, dfc, dfu):
 
     return b[~b['self_vote']]
 
+
 @timed
 def run_plotline(dfs, online=False, start_date=None, size=(1000, 400), pr='D', ma=7):
 
@@ -148,20 +149,18 @@ def run_plotline(dfs, online=False, start_date=None, size=(1000, 400), pr='D', m
     dfv = dfs['votes']
     dpv = dfs['views']  # pv = post-views
 
-
     valid_users = dfu[(~dfu['banned'])&(~dfu['deleted'])&(dfu['num_distinct_posts_viewed']>=5)]
     valid_posts = dfp[(dfp[['smallUpvote', 'bigUpvote']].sum(axis=1) >= 2)&~dfp['draft']&~dfp['legacySpam']]
     valid_comments = dfc[dfc['userId']!='pgoCXxuzpkPXADTp2'] #remove GPT-2
     valid_votes = get_valid_non_self_votes(dfv,dfp, dfc, dfu)
 
-
     # logged-in users
     plotly_ds_uniques(dpv[dpv['userId'].isin(valid_users['_id'])], date_col='createdAt', title='Num Logged-In Users',
-                            start_date=start_date, online=online, size=size, color='black', pr=pr, ma=ma)
+                      start_date=start_date, online=online, size=size, color='black', pr=pr, ma=ma)
     # posts
     plotly_ts_ma(valid_posts, 'Num Posts with 2+ upvotes', 'blue', start_date=start_date, online=online, size=size, pr=pr, ma=ma)
     # comments
-    plotly_ts_ma(valid_comments, 'Num Comments', 'green', start_date=start_date, online=online, size=size, pr=pr, ma=ma) #exclude GPT2
+    plotly_ts_ma(valid_comments, 'Num Comments', 'green', start_date=start_date, online=online, size=size, pr=pr, ma=ma)  # exclude GPT2
     # logged-in post-views
     plotly_ts_ma(dpv, 'Num Logged-In Post Views', 'red', date_col='createdAt', start_date=start_date, online=online,
                  size=size, pr=pr, ma=ma)

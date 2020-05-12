@@ -1,6 +1,5 @@
 import pandas as pd
 import datetime
-import matplotlib
 import numpy as np
 
 from pymongo import MongoClient
@@ -8,11 +7,8 @@ import pathlib
 import html2text
 
 import os
-import shutil
-import configparser
 
 from losttheplotly import run_plotline
-from cellularautomaton import *
 from karmametric import run_metric_pipeline
 from flipthetable import run_pg_pandas_transfer
 
@@ -20,11 +16,12 @@ from utils import timed, print_and_log, get_config_field
 
 MONGO_DB_NAME = get_config_field('MONGODB', 'db_name')
 MONGO_DB_URL = get_config_field('MONGODB', 'prod_db_url')
-BASE_PATH = get_config_field('PATHS','base')
+BASE_PATH = get_config_field('PATHS', 'base')
 ENV = get_config_field('ENV', 'env')
 
 
 def get_mongo_db_object():
+    # Weird bug: this next line times out on the DNS lookup if it's already been run
     client = MongoClient(MONGO_DB_URL)
     db = client[MONGO_DB_NAME]
     return db
