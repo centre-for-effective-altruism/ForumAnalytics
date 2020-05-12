@@ -6,31 +6,31 @@ import plotly.graph_objs as go
 from plotly.offline import iplot
 
 
-def plot_mau(dfs, online=False):
-    dfv = dfs['views']
-    dfv['month_year'] = dfv['createdAt'].apply(lambda x: x.strftime('%Y-%m'))
-    dfvp = dfv[['month_year', 'userId']]
-    dfv1 = dfvp.groupby([dfv.month_year]).nunique()
+def plot_mau(df_all, online=False):
+    df_views = df_all['views']
+    df_views['month_year'] = df_views['createdAt'].apply(lambda x: x.strftime('%Y-%m'))
+    df_views_months = df_views[['month_year', 'userId']]
+    df_monthly_users = df_views_months.groupby([df_views.month_year]).nunique()
 
     # remove last partial month
-    dfv1 = dfv1.iloc[:-1, :]
+    df_monthly_users = df_monthly_users.iloc[:-1, :]
 
     # hackily remove may (spampocalypse)
-    maus = dfv1['userId']
+    maus = df_monthly_users['userId']
     maus['2019-05'] = 658  # Average of April and June
 
     title = 'Monthly Active Users (Logged-in Viewers)'
 
     data = [go.Scatter(
-        x=dfv1.index, y=maus, line={'color': 'blue', 'width': 1},
+        x=df_monthly_users.index, y=maus, line={'color': 'blue', 'width': 1},
         name='Monthly Active Users'
     )]
 
     layout = go.Layout(
         autosize=True, width=700, height=400,
         title=title,
-        xaxis={'range': ['2019-03', dfv1.index.max()]},
-        yaxis={'range': [0, dfv1['userId'].max() * 1.2]}
+        xaxis={'range': ['2019-03', df_monthly_users.index.max()]},
+        yaxis={'range': [0, df_monthly_users['userId'].max() * 1.2]}
     )
 
     fig = go.Figure(data=data, layout=layout)
