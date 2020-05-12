@@ -1,9 +1,11 @@
 """
 EA Dashboard Additions besides headline metrics
 """
-from losttheplotly import plotly_ts_ma
 import plotly.graph_objs as go
+import plotly.plotly as py
 from plotly.offline import iplot
+
+from losttheplotly import plotly_ts_ma
 
 
 def calculate_mau(df_all):
@@ -36,7 +38,10 @@ def plot_mau(df_monthly_users, online=False):
         yaxis={'range': [0, df_monthly_users['userId'].max() * 1.2]}
     )
     fig = go.Figure(data=data, layout=layout)
-    iplot(fig, filename=title)
+    if online:
+        py.iplot(fig, filename=title)
+    else:
+        iplot(fig, filename=title)
 
 
 def plot_views_all(df_all, online=False):
