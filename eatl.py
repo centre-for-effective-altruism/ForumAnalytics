@@ -24,4 +24,4 @@ def run(plot=True, metric=True, limit=None, online=True):
 
 
 if __name__ == "__main__":
-    run()
+    run(metric=False)
